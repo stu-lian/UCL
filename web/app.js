@@ -1228,6 +1228,7 @@ function settingsHTML() {
           <button class="quick-link" data-action="open-instance-folder">${icon('folder')}<span><b>打开当前实例目录</b><small>mods、存档和配置</small></span></button>
           <button class="quick-link" data-action="open-launcher-data">${icon('box')}<span><b>打开启动器目录</b><small>日志、缓存和账户数据</small></span></button>
           <button class="quick-link" data-action="refresh-page">${icon('refresh')}<span><b>重新读取版本</b><small>刷新版本清单</small></span></button>
+          <button class="quick-link" data-action="about">${icon('info')}<span><b>关于</b><small>作者、协议和 GitHub 仓库</small></span></button>
           <button class="quick-link" data-action="quit">${icon('logout')}<span><b>退出启动器</b><small>不会结束正在运行的游戏</small></span></button>
         </div>
         <div class="panel settings-section tip-panel" style="margin-top:10px">
@@ -1657,6 +1658,7 @@ async function handleAction(action, el) {
       catch (e) { toast(e.message, 'error'); }
       return;
     case 'open-launcher-data': try { await api('/api/open-folder', { method: 'POST', body: { target: 'data' } }); } catch (e) { toast(e.message, 'error'); } return;
+    case 'about': openAbout(); return;
     case 'save-settings': await saveSettings(false); return;
     case 'set-accent':
       state.config.accent = el.dataset.accent;
@@ -1680,6 +1682,22 @@ async function handleAction(action, el) {
     case 'confirm-cancel': state.confirmAction = null; closeModal(); return;
     default: return;
   }
+}
+function openAbout() {
+  openModal(`${modalHead('关于 Union Craft Launcher', '轻量 Minecraft 启动器')}
+    <div class="modal-body">
+      <div class="about-hero">
+        <span class="brand-mark about-mark">U</span>
+        <div><b>Union Craft Launcher</b><span>版本 ${esc(state.version || '0.2.0')}</span></div>
+      </div>
+      <div class="about-list">
+        <div><span>作者</span><b>stu-lian</b></div>
+        <div><span>协议</span><b>GNU General Public License v3.0</b></div>
+        <div><span>GitHub</span><button class="about-link" data-action="open-url" data-url="https://github.com/stu-lian/UCL">github.com/stu-lian/UCL</button></div>
+      </div>
+      <p class="about-note">本项目为开源软件，按 GPL-3.0 分发。Minecraft 是 Mojang Studios / Microsoft 的商标，本项目与其无隶属关系。</p>
+    </div>
+    <div class="modal-foot"><button class="btn" data-action="close-modal">关闭</button></div>`, 'narrow');
 }
 function openConfirm(title, text, fn, danger = true) {
   state.confirmAction = fn;

@@ -25,8 +25,28 @@ public final class InstanceService {
 
     public Path instancesDir() throws IOException {
         Path dir = config.instancesDir();
+        if (config.portable() && !Files.exists(dir)) {
+            Path legacy = Util.dataDir().resolve("minecraft").resolve("instances");
+            if (!legacy.equals(dir.toAbsolutePath().normalize()) && Files.isDirectory(legacy)) {
+                copyTree(legacy, dir);
+            }
+        }
         Files.createDirectories(dir);
         return dir;
+    }
+
+    private void copyTree(Path source, Path target) throws IOException {
+        try (var stream = Files.walk(source)) {
+            for (Path item : stream.toList()) {
+                Path destination = target.resolve(source.relativize(item).toString());
+                if (Files.isDirectory(item)) {
+                    Files.createDirectories(destination);
+                } else if (Files.isRegularFile(item) && !Files.exists(destination)) {
+                    Files.createDirectories(destination.getParent());
+                    Files.copy(item, destination);
+                }
+            }
+        }
     }
 
     public synchronized List<Map<String, Object>> list() {
@@ -34,6 +54,7 @@ public final class InstanceService {
         try {
             Path base = instancesDir();
             migrateImportedLayout(base);
+            migrateLocalLayout(base);
             try (var stream = Files.list(base)) {
                 for (Path dir : stream.toList()) {
                     if (!Files.isDirectory(dir)) continue;
@@ -61,11 +82,14 @@ public final class InstanceService {
         String id = uniqueId(cleanName);
         Path dir = instancesDir().resolve(id);
         Files.createDirectories(dir);
-        createGameFolders(dir);
+        Path gameDir = config.minecraftDir().resolve("versions").resolve(version);
+        Files.createDirectories(gameDir);
+        createGameFolders(gameDir);
         Map<String, Object> instance = baseInstance(id, cleanName, version, loader,
                 loaderVersion, description);
         instance.put("root", "");
-        instance.put("gameDir", dir.toString());
+        instance.put("gameDir", gameDir.toString());
+        instance.put("gameDirMode", "version");
         instance.put("isolated", true);
         write(dir, instance);
         config.set("lastInstance", id);
@@ -430,6 +454,34 @@ public final class InstanceService {
             try { write(registry, instance); } catch (IOException ignored) { }
         }
         config.set("instanceLayoutV3", true);
+    }
+
+    /** New local instances keep game data in versions/&lt;version&gt;, like imported versions. */
+    private void migrateLocalLayout(Path base) {
+        if (config.getBool("instanceLayoutV4", false) && !config.portable()) return;
+        try (var stream = Files.list(base)) {
+            for (Path registry : stream.toList()) {
+                if (!Files.isDirectory(registry)) continue;
+                Map<String, Object> instance = readRaw(registry);
+                if (instance == null) continue;
+                if ("imported".equals(Json.str(instance, "source", ""))) continue;
+                String version = Json.str(instance, "version", "");
+                if (version.isBlank()) continue;
+                Path root;
+                try { root = rootDir(instance); } catch (Exception e) { continue; }
+                Path desired = root.resolve("versions").resolve(version).toAbsolutePath().normalize();
+                Path old;
+                try { old = gameDir(instance, registry); } catch (Exception e) { continue; }
+                if (!old.equals(desired)) {
+                    if (Files.isDirectory(old)) copyGameData(old, desired);
+                    instance.put("gameDir", desired.toString());
+                }
+                instance.put("gameDirMode", "version");
+                instance.put("isolated", true);
+                try { write(registry, instance); } catch (IOException ignored) { }
+            }
+        } catch (IOException ignored) { }
+        config.set("instanceLayoutV4", true);
     }
 
     private void copyGameData(Path source, Path target) {

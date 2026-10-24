@@ -271,6 +271,10 @@ public final class MinecraftMeta {
         mirror.download(url, jar, Json.str(client, "sha1", ""), n ->
                 job.progress(start + span * Math.min(1.0, n / (double) Math.max(1, clientSize)), "客户端", "下载 " + id + ".jar"));
         job.details(1, 1, 0, clientSize, 0);
+        Path localJson = jar.getParent().resolve(id + ".json");
+        if (!Files.isRegularFile(localJson)) {
+            Util.write(localJson, Json.write(detail));
+        }
         job.log("客户端核心已就绪 · " + Util.bytes(Files.size(jar)));
         return jar;
     }
@@ -425,7 +429,29 @@ public final class MinecraftMeta {
                 extractNatives(jar, nativesDir, Json.map(nativeJar.get("extract")));
             }
         }
+        prepareNativeLayout(nativesDir);
         return classpath;
+    }
+
+    /**
+     * Modern versions (1.21.9+) load LWJGL from ${natives_directory}/java rather than the
+     * natives root. Mirror the extracted native files there while keeping the old root layout.
+     */
+    private void prepareNativeLayout(Path nativesDir) throws IOException {
+        Path javaDir = nativesDir.resolve("java");
+        Files.createDirectories(javaDir);
+        Files.createDirectories(nativesDir.resolve("lwjgl"));
+        Files.createDirectories(nativesDir.resolve("jna"));
+        Files.createDirectories(nativesDir.resolve("netty"));
+        try (var stream = Files.walk(nativesDir, 4)) {
+            for (Path source : stream.toList()) {
+                if (!Files.isRegularFile(source) || source.startsWith(javaDir)) continue;
+                String name = source.getFileName().toString().toLowerCase(Locale.ROOT);
+                if (!(name.endsWith(".dll") || name.endsWith(".so") || name.endsWith(".dylib")
+                        || name.endsWith(".jnilib"))) continue;
+                Files.copy(source, javaDir.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
     }
 
     public void extractNatives(Path jar, Path nativesDir, Map<String, Object> extract) throws IOException {

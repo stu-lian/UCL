@@ -29,6 +29,9 @@ Write-Host "Running jpackage..." -ForegroundColor Cyan
   --main-jar "UnionCraftLauncher.jar" `
   --main-class "org.unioncraft.launcher.Main" `
   --java-options "-Dfile.encoding=UTF-8" `
+  --java-options "-Ducl.portable=true" `
   --add-modules "java.base,java.net.http,java.desktop,jdk.httpserver,java.logging,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.unsupported"
 if ($LASTEXITCODE -ne 0) { throw "jpackage failed" }
+Copy-Item -Path (Join-Path $root "LICENSE") -Destination (Join-Path $dist "Union Craft Launcher") -Force
+Copy-Item -Path (Join-Path $root "README.md") -Destination (Join-Path $dist "Union Craft Launcher") -Force
 Write-Host "App image ready -> $dist\Union Craft Launcher\Union Craft Launcher.exe" -ForegroundColor Green

@@ -85,7 +85,17 @@ public final class Config {
         saveQuietly();
     }
 
+    public boolean portable() {
+        return "true".equalsIgnoreCase(System.getProperty("ucl.portable", ""))
+                || (System.getenv("UCL_GAME_DIR") != null && !System.getenv("UCL_GAME_DIR").isBlank());
+    }
+
     public synchronized Path minecraftDir() {
+        String portable = System.getenv("UCL_GAME_DIR");
+        if (portable != null && !portable.isBlank()) return Path.of(portable).toAbsolutePath();
+        if ("true".equalsIgnoreCase(System.getProperty("ucl.portable", ""))) {
+            return Util.appDir().resolve("minecraft").toAbsolutePath();
+        }
         return Path.of(getString("minecraftDir", Util.dataDir().resolve("minecraft").toString())).toAbsolutePath();
     }
 

@@ -34,6 +34,21 @@ public final class Util {
 
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneOffset.systemDefault());
 
+    /** Directory containing the launcher exe (or the project when run from source). */
+    public static Path appDir() {
+        try {
+            Path code = Path.of(Util.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            if (Files.isRegularFile(code) && code.getFileName().toString().endsWith(".jar")) {
+                Path app = code.getParent();
+                if (app != null && "app".equals(app.getFileName().toString()) && app.getParent() != null) {
+                    return app.getParent().toAbsolutePath().normalize();
+                }
+                if (app != null) return app.toAbsolutePath().normalize();
+            }
+        } catch (Exception ignored) { }
+        return Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
+    }
+
     public static Path dataDir() {
         String override = System.getenv("UCL_DATA_DIR");
         if (override != null && !override.isBlank()) return Path.of(override).toAbsolutePath();

@@ -232,6 +232,24 @@ public final class Main {
         for (Path candidate : candidates) {
             if (candidate != null && Files.isRegularFile(candidate)) return candidate;
         }
+        if (!Util.WINDOWS) {
+            Path[] linux = {
+                    Path.of("/usr/bin/google-chrome"),
+                    Path.of("/usr/bin/google-chrome-stable"),
+                    Path.of("/opt/google/chrome/chrome"),
+                    Path.of("/usr/bin/chromium"),
+                    Path.of("/usr/bin/chromium-browser"),
+                    Path.of("/snap/bin/chromium"),
+                    Path.of("/usr/bin/microsoft-edge"),
+                    Path.of("/usr/bin/microsoft-edge-stable"),
+                    Path.of("/opt/microsoft/msedge/msedge"),
+                    Path.of("/usr/bin/brave-browser"),
+                    Path.of("/opt/brave.com/brave/brave-browser")
+            };
+            for (Path candidate : linux) {
+                if (Files.isRegularFile(candidate)) return candidate;
+            }
+        }
         return null;
     }
 }

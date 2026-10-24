@@ -153,7 +153,11 @@ html[data-theme="dark"] .avatar { background: rgba(255,255,255,.08); }
 .account-mini-text b { font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .account-mini-text small { font-size: 9px; color: var(--faint); }
 .mini-more { margin-left: auto; width: 14px !important; height: 14px !important; color: var(--faint); }
-.sidebar-version { padding: 10px 8px 2px; font-size: 8.5px; color: var(--faint); letter-spacing: .2px; }
+.sidebar-version {
+  width: 100%; padding: 10px 8px 2px; text-align: left; font-size: 8.5px;
+  color: var(--faint); letter-spacing: .2px; cursor: pointer;
+}
+.sidebar-version:hover { color: var(--accent); }
 
 .main { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .topbar {
@@ -594,8 +598,21 @@ html[data-theme="dark"] .nice-option:hover { background: rgba(255,255,255,.075);
 .about-box h3 { font-size: 14px; font-weight: 650; }
 .about-box p { font-size: 9.5px; color: var(--faint); margin-top: 5px; line-height: 1.7; }
 .about-list { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
-.about-list div { display: flex; justify-content: space-between; gap: 10px; font-size: 9px; color: var(--faint); }
+.about-list div { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 9.5px; color: var(--faint); }
 .about-list b { font-weight: 500; color: var(--muted); text-align: right; word-break: break-all; }
+.about-hero { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.about-mark {
+  width: 38px; height: 38px; font-size: 18px; flex: none; display: grid; place-items: center;
+  border-radius: 11px; color: #fff; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #000));
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.about-hero b { display: block; font-size: 13px; }
+.about-hero span { display: block; margin-top: 2px; font-size: 9px; color: var(--faint); }
+.about-list { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--surface-soft); gap: 8px; }
+.about-list .about-link { color: var(--accent); font-size: 9.5px; text-align: right; word-break: break-all; }
+.about-list .about-link:hover { text-decoration: underline; }
+.about-note { margin-top: 12px; font-size: 9px; line-height: 1.75; color: var(--faint); }
 
 /* modal */
 .modal-overlay {
