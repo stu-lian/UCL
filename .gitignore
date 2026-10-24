@@ -1,0 +1,25 @@
+# Build outputs
+/build/
+/dist/
+/out/
+/bin/
+
+# Third-party reference material (do not redistribute with this MIT project)
+/PCL2-2.99.0.0-download-enabled/
+/PCL2-示例/
+
+# Local runtime data
+*.log
+*.tmp
+*.part
+*.bak
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Python cache
+/tools/__pycache__/

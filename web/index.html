@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>Union Craft Launcher</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <script src="/theme-boot.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
+
+  <div id="app" class="app">
+    <aside class="sidebar">
+      <div class="brand" data-nav="home" role="button" tabindex="0">
+        <span class="brand-name">Union Craft Launcher</span>
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <button class="nav-item" data-nav="home"><span data-icon="play"></span><span>启动</span></button>
+        <button class="nav-item" data-nav="download"><span data-icon="download"></span><span>下载</span></button>
+        <button class="nav-item" data-nav="instances"><span data-icon="layers"></span><span>实例</span><b class="nav-badge" id="instance-badge">0</b></button>
+        <button class="nav-item" data-nav="content"><span data-icon="compass"></span><span>内容</span></button>
+        <button class="nav-item" data-nav="settings"><span data-icon="settings"></span><span>设置</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="account-mini" id="account-mini" data-action="accounts">
+          <span class="avatar" id="mini-avatar"><img src="/assets/steve.png" alt=""></span>
+          <span class="account-mini-text"><b id="mini-name">未登录</b><small id="mini-type">点击添加账户</small></span>
+          <span class="mini-more" data-icon="more"></span>
+        </button>
+        <div class="sidebar-version">Union Craft 0.2.0</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">启动游戏</h1>
+          <p id="page-subtitle">选择账户和版本后直接启动</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn btn-ghost btn-sm job-toggle hidden" id="job-toggle" data-action="toggle-job-center" title="打开下载进度"><span data-icon="download"></span><span id="job-toggle-label">下载</span><b class="job-badge" id="job-badge">0</b><i class="job-topbar-fill" id="job-topbar-fill"></i></button>
+          <button class="btn btn-ghost btn-sm" data-action="refresh-page"><span data-icon="refresh"></span><span>刷新</span></button>
+          <button class="btn btn-ghost btn-sm" data-action="nav-settings"><span data-icon="settings"></span><span>设置</span></button>
+        </div>
+      </header>
+      <div id="view" class="view"></div>
+    </main>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root"></div>
+  <div id="job-dock" class="job-dock"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
